@@ -22,6 +22,7 @@ A [Slack](https://slack.com) Handler for [slog](https://pkg.go.dev/golang.org/x/
 - [slog-sentry](https://github.com/samber/slog-sentry): A `slog` handler for `Sentry`
 - [slog-fluentd](https://github.com/samber/slog-fluentd): A `slog` handler for `Fluentd`
 - [slog-syslog](https://github.com/samber/slog-syslog): A `slog` handler for `Syslog`
+- [slog-graylog](https://github.com/samber/slog-graylog): A `slog` handler for `Graylog`
 
 ## 🚀 Install
 
