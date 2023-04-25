@@ -22,8 +22,9 @@ func DefaultConverter(loggerAttr []slog.Attr, record *slog.Record) *slack.Webhoo
 	}
 
 	attrToSlackMessage("", loggerAttr, message)
-	record.Attrs(func(attr slog.Attr) {
+	record.Attrs(func(attr slog.Attr) bool {
 		attrToSlackMessage("", []slog.Attr{attr}, message)
+		return true
 	})
 
 	return message
