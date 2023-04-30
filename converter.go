@@ -73,7 +73,7 @@ func attrToValue(v slog.Value) string {
 	case slog.KindDuration:
 		return v.Duration().String()
 	case slog.KindTime:
-		return v.Time().String()
+		return v.Time().UTC().String()
 	default:
 		return anyValueToString(v)
 	}
