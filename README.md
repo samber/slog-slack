@@ -81,6 +81,10 @@ Attributes will be injected in message attachments.
 
 ### Example
 
+#### Using webhook
+
+Generate a webhook [here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
+
 ```go
 import (
 	slogslack "github.com/samber/slog-slack"
@@ -116,9 +120,9 @@ func main() {
 }
 ```
 
-#### Bot token
+#### Using bot token
 
-Use [Bot token](https://api.slack.com/authentication/token-types#bot)
+Use [Bot token](https://api.slack.com/authentication/token-types#bot).
 
 ```go
 import (
