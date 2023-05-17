@@ -59,6 +59,8 @@ type Option struct {
 
 	// slack webhook url
 	WebhookURL string
+	// slack bot token
+	BotToken string
 	// slack channel (default: webhook channel)
 	Channel string
 	// bot username (default: webhook username)
@@ -78,6 +80,10 @@ Attributes will be injected in message attachments.
 ![screenshot](./screenshot.png)
 
 ### Example
+
+#### Using webhook
+
+Generate a webhook [here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
 
 ```go
 import (
@@ -111,6 +117,27 @@ func main() {
             ),
         ).
         Info("user registration")
+}
+```
+
+#### Using bot token
+
+Use [Bot token](https://api.slack.com/authentication/token-types#bot).
+
+```go
+import (
+	slogslack "github.com/samber/slog-slack"
+	"golang.org/x/exp/slog"
+)
+
+func main() {
+    token := "xoxb-"
+    channel := "alerts"
+
+    logger := slog.New(slogslack.Option{Level: slog.LevelError, BotToken: token, Channel: channel}.NewSlackHandler())
+    logger = logger.
+        With("environment", "dev").
+        With("release", "v1.0.0")
 }
 ```
 
