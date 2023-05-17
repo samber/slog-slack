@@ -13,6 +13,8 @@ type Option struct {
 
 	// slack webhook url
 	WebhookURL string
+	// slack bot token
+	BotToken string
 	// slack channel (default: webhook channel)
 	Channel string
 	// bot username (default: webhook username)
@@ -31,8 +33,8 @@ func (o Option) NewSlackHandler() slog.Handler {
 		o.Level = slog.LevelDebug
 	}
 
-	if o.WebhookURL == "" {
-		panic("missing Slack webhook url")
+	if o.WebhookURL == "" && o.BotToken == "" {
+		panic("missing Slack webhook url and bot token")
 	}
 
 	return &SlackHandler{
@@ -76,7 +78,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
-	return slack.PostWebhook(h.option.WebhookURL, message)
+	return h.postMessage(ctx, message)
 }
 
 func (h *SlackHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
@@ -93,4 +95,19 @@ func (h *SlackHandler) WithGroup(name string) slog.Handler {
 		attrs:  h.attrs,
 		groups: append(h.groups, name),
 	}
+}
+
+func (h *SlackHandler) postMessage(ctx context.Context, message *slack.WebhookMessage) error {
+	if h.option.WebhookURL != "" {
+		return slack.PostWebhook(h.option.WebhookURL, message)
+	}
+
+	_, _, err := slack.New(h.option.BotToken).PostMessageContext(ctx, message.Channel,
+		slack.MsgOptionText(message.Text, true),
+		slack.MsgOptionAttachments(message.Attachments...),
+		slack.MsgOptionUsername(message.Username),
+		slack.MsgOptionIconURL(message.IconURL),
+		slack.MsgOptionIconEmoji(message.IconEmoji),
+	)
+	return err
 }
