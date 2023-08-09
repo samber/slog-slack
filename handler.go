@@ -3,8 +3,9 @@ package slogslack
 import (
 	"context"
 
+	"log/slog"
+
 	"github.com/slack-go/slack"
-	"golang.org/x/exp/slog"
 )
 
 type Option struct {

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"log/slog"
+
 	"github.com/slack-go/slack"
-	"golang.org/x/exp/slog"
 )
 
 type Converter func(loggerAttr []slog.Attr, record *slog.Record) *slack.WebhookMessage

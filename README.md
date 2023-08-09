@@ -2,7 +2,7 @@
 # slog: Slack handler
 
 [![tag](https://img.shields.io/github/tag/samber/slog-slack.svg)](https://github.com/samber/slog-slack/releases)
-![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.20.3-%23007d9c)
+![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-%23007d9c)
 [![GoDoc](https://godoc.org/github.com/samber/slog-slack?status.svg)](https://pkg.go.dev/github.com/samber/slog-slack)
 ![Build Status](https://github.com/samber/slog-slack/actions/workflows/test.yml/badge.svg)
 [![Go report](https://goreportcard.com/badge/github.com/samber/slog-slack)](https://goreportcard.com/report/github.com/samber/slog-slack)
@@ -10,7 +10,7 @@
 [![Contributors](https://img.shields.io/github/contributors/samber/slog-slack)](https://github.com/samber/slog-slack/graphs/contributors)
 [![License](https://img.shields.io/github/license/samber/slog-slack)](./LICENSE)
 
-A [Slack](https://slack.com) Handler for [slog](https://pkg.go.dev/golang.org/x/exp/slog) Go library.
+A [Slack](https://slack.com) Handler for [slog](https://pkg.go.dev/golang.org/log/slog) Go library.
 
 **See also:**
 
@@ -41,11 +41,9 @@ A [Slack](https://slack.com) Handler for [slog](https://pkg.go.dev/golang.org/x/
 go get github.com/samber/slog-slack
 ```
 
-**Compatibility**: go >= 1.20.3
+**Compatibility**: go >= 1.21
 
-This library is v0 and follows SemVer strictly. On `slog` final release (go 1.21), this library will go v1.
-
-No breaking changes will be made to exported APIs before v1.0.0.
+No breaking changes will be made to exported APIs before v2.0.0.
 
 ## 💡 Usage
 
@@ -89,7 +87,7 @@ Generate a webhook [here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
 ```go
 import (
 	slogslack "github.com/samber/slog-slack"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 func main() {
@@ -128,7 +126,7 @@ Use [Bot token](https://api.slack.com/authentication/token-types#bot).
 ```go
 import (
 	slogslack "github.com/samber/slog-slack"
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package slogslack
 
 import (
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 var colorMap = map[slog.Level]string{
