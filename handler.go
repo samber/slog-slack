@@ -45,6 +45,8 @@ func (o Option) NewSlackHandler() slog.Handler {
 	}
 }
 
+var _ slog.Handler = (*SlackHandler)(nil)
+
 type SlackHandler struct {
 	option Option
 	attrs  []slog.Attr
