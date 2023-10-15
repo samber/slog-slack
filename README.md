@@ -57,28 +57,28 @@ GoDoc: [https://pkg.go.dev/github.com/samber/slog-slack](https://pkg.go.dev/gith
 
 ```go
 type Option struct {
-	// log level (default: debug)
-	Level slog.Leveler
+    // log level (default: debug)
+    Level slog.Leveler
 
-	// slack webhook url
-	WebhookURL string
-	// slack bot token
-	BotToken string
-	// slack channel (default: webhook channel)
-	Channel string
-	// bot username (default: webhook username)
-	Username string
-	// bot emoji (default: webhook emoji)
-	IconEmoji string
-	// bot emoji (default: webhook emoji)
-	IconURL string
+    // slack webhook url
+    WebhookURL string
+    // slack bot token
+    BotToken string
+    // slack channel (default: webhook channel)
+    Channel string
+    // bot username (default: webhook username)
+    Username string
+    // bot emoji (default: webhook emoji)
+    IconEmoji string
+    // bot emoji (default: webhook emoji)
+    IconURL string
 
-	// optional: customize Slack message builder
-	Converter Converter
+    // optional: customize Slack message builder
+    Converter Converter
 
-	// optional: see slog.HandlerOptions
-	AddSource   bool
-	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
+    // optional: see slog.HandlerOptions
+    AddSource   bool
+    ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
 }
 ```
 
@@ -100,8 +100,8 @@ Generate a webhook [here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
 
 ```go
 import (
-	slogslack "github.com/samber/slog-slack"
-	"log/slog"
+    slogslack "github.com/samber/slog-slack"
+    "log/slog"
 )
 
 func main() {
