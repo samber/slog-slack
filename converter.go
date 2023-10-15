@@ -1,18 +1,27 @@
 package slogslack
 
 import (
-	"encoding"
-	"fmt"
-	"strconv"
-
 	"log/slog"
 
+	slogcommon "github.com/samber/slog-common"
 	"github.com/slack-go/slack"
 )
 
-type Converter func(loggerAttr []slog.Attr, record *slog.Record) *slack.WebhookMessage
+var SourceKey = "source"
 
-func DefaultConverter(loggerAttr []slog.Attr, record *slog.Record) *slack.WebhookMessage {
+type Converter func(addSource bool, replaceAttr func(groups []string, a slog.Attr) slog.Attr, loggerAttr []slog.Attr, groups []string, record *slog.Record) *slack.WebhookMessage
+
+func DefaultConverter(addSource bool, replaceAttr func(groups []string, a slog.Attr) slog.Attr, loggerAttr []slog.Attr, groups []string, record *slog.Record) *slack.WebhookMessage {
+	// aggregate all attributes
+	attrs := slogcommon.AppendRecordAttrsToAttrs(loggerAttr, groups, record)
+
+	// developer formatters
+	if addSource {
+		attrs = append(attrs, slogcommon.Source(SourceKey, record))
+	}
+	attrs = slogcommon.ReplaceAttrs(replaceAttr, []string{}, attrs...)
+
+	// handler formatter
 	message := &slack.WebhookMessage{}
 	message.Text = record.Message
 	message.Attachments = []slack.Attachment{
@@ -22,12 +31,7 @@ func DefaultConverter(loggerAttr []slog.Attr, record *slog.Record) *slack.Webhoo
 		},
 	}
 
-	attrToSlackMessage("", loggerAttr, message)
-	record.Attrs(func(attr slog.Attr) bool {
-		attrToSlackMessage("", []slog.Attr{attr}, message)
-		return true
-	})
-
+	attrToSlackMessage("", attrs, message)
 	return message
 }
 
@@ -43,52 +47,8 @@ func attrToSlackMessage(base string, attrs []slog.Attr, message *slack.WebhookMe
 		} else {
 			field := slack.AttachmentField{}
 			field.Title = base + k
-			field.Value = attrToValue(v)
+			field.Value = slogcommon.ValueToString(v)
 			message.Attachments[0].Fields = append(message.Attachments[0].Fields, field)
 		}
-
 	}
-}
-
-func attrToValue(v slog.Value) string {
-	kind := v.Kind()
-
-	switch kind {
-	case slog.KindAny:
-		return anyValueToString(v)
-	case slog.KindLogValuer:
-		return anyValueToString(v)
-	case slog.KindGroup:
-		// not expected to reach this line
-		return anyValueToString(v)
-	case slog.KindInt64:
-		return fmt.Sprintf("%d", v.Int64())
-	case slog.KindUint64:
-		return fmt.Sprintf("%d", v.Uint64())
-	case slog.KindFloat64:
-		return fmt.Sprintf("%f", v.Float64())
-	case slog.KindString:
-		return v.String()
-	case slog.KindBool:
-		return strconv.FormatBool(v.Bool())
-	case slog.KindDuration:
-		return v.Duration().String()
-	case slog.KindTime:
-		return v.Time().UTC().String()
-	default:
-		return anyValueToString(v)
-	}
-}
-
-func anyValueToString(v slog.Value) string {
-	if tm, ok := v.Any().(encoding.TextMarshaler); ok {
-		data, err := tm.MarshalText()
-		if err != nil {
-			return ""
-		}
-
-		return string(data)
-	}
-
-	return fmt.Sprintf("%+v", v.Any())
 }

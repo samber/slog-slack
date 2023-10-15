@@ -75,10 +75,20 @@ type Option struct {
 
 	// optional: customize Slack message builder
 	Converter Converter
+
+	// optional: see slog.HandlerOptions
+	AddSource   bool
+	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
 }
 ```
 
 Attributes will be injected in message attachments.
+
+Other global parameters:
+
+```go
+slogslack.SourceKey = "source"
+```
 
 ![screenshot](./screenshot.png)
 

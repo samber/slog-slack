@@ -5,6 +5,7 @@ import (
 
 	"log/slog"
 
+	slogcommon "github.com/samber/slog-common"
 	"github.com/slack-go/slack"
 )
 
@@ -27,6 +28,10 @@ type Option struct {
 
 	// optional: customize Slack message builder
 	Converter Converter
+
+	// optional: see slog.HandlerOptions
+	AddSource   bool
+	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
 }
 
 func (o Option) NewSlackHandler() slog.Handler {
@@ -63,7 +68,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		converter = h.option.Converter
 	}
 
-	message := converter(h.attrs, &record)
+	message := converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
 
 	if h.option.Channel != "" {
 		message.Channel = h.option.Channel
@@ -87,7 +92,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 func (h *SlackHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &SlackHandler{
 		option: h.option,
-		attrs:  appendAttrsToGroup(h.groups, h.attrs, attrs),
+		attrs:  slogcommon.AppendAttrsToGroup(h.groups, h.attrs, attrs...),
 		groups: h.groups,
 	}
 }
