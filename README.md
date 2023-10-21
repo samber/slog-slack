@@ -43,16 +43,16 @@ A [Slack](https://slack.com) Handler for [slog](https://pkg.go.dev/golang.org/lo
 ## 🚀 Install
 
 ```sh
-go get github.com/samber/slog-slack
+go get github.com/samber/slog-slack/v2
 ```
 
 **Compatibility**: go >= 1.21
 
-No breaking changes will be made to exported APIs before v2.0.0.
+No breaking changes will be made to exported APIs before v3.0.0.
 
 ## 💡 Usage
 
-GoDoc: [https://pkg.go.dev/github.com/samber/slog-slack](https://pkg.go.dev/github.com/samber/slog-slack)
+GoDoc: [https://pkg.go.dev/github.com/samber/slog-slack/v2](https://pkg.go.dev/github.com/samber/slog-slack/v2)
 
 ### Handler options
 
@@ -101,7 +101,7 @@ Generate a webhook [here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
 
 ```go
 import (
-    slogslack "github.com/samber/slog-slack"
+    slogslack "github.com/samber/slog-slack/v2"
     "log/slog"
 )
 
@@ -140,7 +140,7 @@ Use [Bot token](https://api.slack.com/authentication/token-types#bot).
 
 ```go
 import (
-	slogslack "github.com/samber/slog-slack"
+	slogslack "github.com/samber/slog-slack/v2"
 	"log/slog"
 )
 
