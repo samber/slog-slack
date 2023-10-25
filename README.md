@@ -89,6 +89,7 @@ Other global parameters:
 
 ```go
 slogslack.SourceKey = "source"
+slogslack.ColorMapping = map[slog.Level]string{...}
 ```
 
 ![screenshot](./screenshot.png)

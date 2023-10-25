@@ -26,7 +26,7 @@ func DefaultConverter(addSource bool, replaceAttr func(groups []string, a slog.A
 	message.Text = record.Message
 	message.Attachments = []slack.Attachment{
 		{
-			Color:  colorMap[record.Level],
+			Color:  ColorMapping[record.Level],
 			Fields: []slack.AttachmentField{},
 		},
 	}
