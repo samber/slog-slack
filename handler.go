@@ -86,7 +86,11 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
-	return h.postMessage(ctx, message)
+	go func() {
+		_ = h.postMessage(ctx, message)
+	}()
+
+	return nil
 }
 
 func (h *SlackHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
