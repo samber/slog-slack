@@ -5,7 +5,6 @@ go 1.21
 require (
 	github.com/samber/slog-common v0.14.0
 	github.com/slack-go/slack v0.12.1
-	go.uber.org/goleak v1.2.1
 )
 
 require (
