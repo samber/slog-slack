@@ -2,6 +2,7 @@ package slogslack
 
 import (
 	"context"
+	"time"
 
 	"log/slog"
 
@@ -26,6 +27,8 @@ type Option struct {
 	// bot emoji (default: webhook emoji)
 	IconURL string
 
+	Timeout time.Duration // default: 10s
+
 	// optional: customize Slack message builder
 	Converter Converter
 
@@ -41,6 +44,10 @@ func (o Option) NewSlackHandler() slog.Handler {
 
 	if o.WebhookURL == "" && o.BotToken == "" {
 		panic("missing Slack webhook url and bot token")
+	}
+
+	if o.Timeout == 0 {
+		o.Timeout = 10 * time.Second
 	}
 
 	return &SlackHandler{
@@ -87,7 +94,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 	}
 
 	go func() {
-		_ = h.postMessage(ctx, message)
+		_ = h.postMessage(message)
 	}()
 
 	return nil
@@ -109,10 +116,13 @@ func (h *SlackHandler) WithGroup(name string) slog.Handler {
 	}
 }
 
-func (h *SlackHandler) postMessage(ctx context.Context, message *slack.WebhookMessage) error {
+func (h *SlackHandler) postMessage(message *slack.WebhookMessage) error {
 	if h.option.WebhookURL != "" {
 		return slack.PostWebhook(h.option.WebhookURL, message)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), h.option.Timeout)
+	defer cancel()
 
 	_, _, err := slack.New(h.option.BotToken).PostMessageContext(ctx, message.Channel,
 		slack.MsgOptionText(message.Text, true),
