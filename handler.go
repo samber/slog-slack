@@ -50,6 +50,10 @@ func (o Option) NewSlackHandler() slog.Handler {
 		o.Timeout = 10 * time.Second
 	}
 
+	if o.Converter == nil {
+		o.Converter = DefaultConverter
+	}
+
 	return &SlackHandler{
 		option: o,
 		attrs:  []slog.Attr{},
@@ -70,12 +74,7 @@ func (h *SlackHandler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
-	converter := DefaultConverter
-	if h.option.Converter != nil {
-		converter = h.option.Converter
-	}
-
-	message := converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
+	message := h.option.Converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
 
 	if h.option.Channel != "" {
 		message.Channel = h.option.Channel
@@ -124,12 +123,16 @@ func (h *SlackHandler) postMessage(message *slack.WebhookMessage) error {
 	ctx, cancel := context.WithTimeout(context.Background(), h.option.Timeout)
 	defer cancel()
 
-	_, _, err := slack.New(h.option.BotToken).PostMessageContext(ctx, message.Channel,
-		slack.MsgOptionText(message.Text, true),
-		slack.MsgOptionAttachments(message.Attachments...),
-		slack.MsgOptionUsername(message.Username),
-		slack.MsgOptionIconURL(message.IconURL),
-		slack.MsgOptionIconEmoji(message.IconEmoji),
-	)
+	_, _, err := slack.
+		New(h.option.BotToken).
+		PostMessageContext(
+			ctx,
+			message.Channel,
+			slack.MsgOptionText(message.Text, true),
+			slack.MsgOptionAttachments(message.Attachments...),
+			slack.MsgOptionUsername(message.Username),
+			slack.MsgOptionIconURL(message.IconURL),
+			slack.MsgOptionIconEmoji(message.IconEmoji),
+		)
 	return err
 }
