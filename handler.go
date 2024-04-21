@@ -35,6 +35,12 @@ type Option struct {
 	// optional: see slog.HandlerOptions
 	AddSource   bool
 	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
+
+	// optional: post in thread for the specified timestamp
+	ThreadTimestamp string
+	// optional: broadcast replies to the channel
+	// valid only when posting in thread
+	BroadcastLevel slog.Leveler
 }
 
 func (o Option) NewSlackHandler() slog.Handler {
@@ -52,6 +58,10 @@ func (o Option) NewSlackHandler() slog.Handler {
 
 	if o.Converter == nil {
 		o.Converter = DefaultConverter
+	}
+
+	if o.BroadcastLevel == nil {
+		o.BroadcastLevel = slog.LevelError
 	}
 
 	return &SlackHandler{
@@ -92,6 +102,13 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
+	if h.option.ThreadTimestamp != "" {
+		message.ThreadTimestamp = h.option.ThreadTimestamp
+		if record.Level >= h.option.BroadcastLevel.Level() {
+			message.ReplyBroadcast = true
+		}
+	}
+
 	go func() {
 		_ = h.postMessage(message)
 	}()
@@ -123,16 +140,20 @@ func (h *SlackHandler) postMessage(message *slack.WebhookMessage) error {
 	ctx, cancel := context.WithTimeout(context.Background(), h.option.Timeout)
 	defer cancel()
 
-	_, _, err := slack.
-		New(h.option.BotToken).
-		PostMessageContext(
-			ctx,
-			message.Channel,
-			slack.MsgOptionText(message.Text, true),
-			slack.MsgOptionAttachments(message.Attachments...),
-			slack.MsgOptionUsername(message.Username),
-			slack.MsgOptionIconURL(message.IconURL),
-			slack.MsgOptionIconEmoji(message.IconEmoji),
-		)
+	options := []slack.MsgOption{
+		slack.MsgOptionText(message.Text, true),
+		slack.MsgOptionAttachments(message.Attachments...),
+		slack.MsgOptionUsername(message.Username),
+		slack.MsgOptionIconURL(message.IconURL),
+		slack.MsgOptionIconEmoji(message.IconEmoji),
+	}
+	if message.ThreadTimestamp != "" {
+		options = append(options, slack.MsgOptionTS(message.ThreadTimestamp))
+	}
+	if message.ReplyBroadcast {
+		options = append(options, slack.MsgOptionBroadcast())
+	}
+
+	_, _, err := slack.New(h.option.BotToken).PostMessageContext(ctx, message.Channel, options...)
 	return err
 }
