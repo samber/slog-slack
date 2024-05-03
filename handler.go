@@ -93,7 +93,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 	}
 
 	go func() {
-		_ = h.postMessage(message)
+		_ = h.postMessage(ctx, message)
 	}()
 
 	return nil
@@ -115,8 +115,8 @@ func (h *SlackHandler) WithGroup(name string) slog.Handler {
 	}
 }
 
-func (h *SlackHandler) postMessage(message *slack.WebhookMessage) error {
-	ctx, cancel := context.WithTimeout(context.Background(), h.option.Timeout)
+func (h *SlackHandler) postMessage(ctx context.Context, message *slack.WebhookMessage) error {
+	ctx, cancel := context.WithTimeout(ctx, h.option.Timeout)
 	defer cancel()
 
 	if h.option.WebhookURL != "" {
