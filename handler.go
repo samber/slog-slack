@@ -116,12 +116,12 @@ func (h *SlackHandler) WithGroup(name string) slog.Handler {
 }
 
 func (h *SlackHandler) postMessage(message *slack.WebhookMessage) error {
-	if h.option.WebhookURL != "" {
-		return slack.PostWebhook(h.option.WebhookURL, message)
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), h.option.Timeout)
 	defer cancel()
+
+	if h.option.WebhookURL != "" {
+		return slack.PostWebhookContext(ctx, h.option.WebhookURL, message)
+	}
 
 	_, _, err := slack.
 		New(h.option.BotToken).
