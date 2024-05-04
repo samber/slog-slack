@@ -35,12 +35,6 @@ type Option struct {
 	// optional: see slog.HandlerOptions
 	AddSource   bool
 	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
-
-	// optional: post in thread for the specified timestamp
-	ThreadTimestamp string
-	// optional: broadcast replies to the channel
-	// valid only when posting in thread
-	BroadcastLevel slog.Leveler
 }
 
 func (o Option) NewSlackHandler() slog.Handler {
@@ -58,10 +52,6 @@ func (o Option) NewSlackHandler() slog.Handler {
 
 	if o.Converter == nil {
 		o.Converter = DefaultConverter
-	}
-
-	if o.BroadcastLevel == nil {
-		o.BroadcastLevel = slog.LevelError
 	}
 
 	return &SlackHandler{
@@ -102,9 +92,9 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
-	if h.option.ThreadTimestamp != "" {
-		message.ThreadTimestamp = h.option.ThreadTimestamp
-		if record.Level >= h.option.BroadcastLevel.Level() {
+	if ts := ContextThreadTimestamp(ctx); ts != "" {
+		message.ThreadTimestamp = ts
+		if ContextReplyBroadcast(ctx) {
 			message.ReplyBroadcast = true
 		}
 	}
