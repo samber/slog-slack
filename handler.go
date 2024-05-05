@@ -92,6 +92,13 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
+	if ts := ContextThreadTimestamp(ctx); ts != "" {
+		message.ThreadTimestamp = ts
+		if ContextReplyBroadcast(ctx) {
+			message.ReplyBroadcast = true
+		}
+	}
+
 	go func() {
 		_ = h.postMessage(ctx, message)
 	}()
@@ -121,6 +128,20 @@ func (h *SlackHandler) postMessage(ctx context.Context, message *slack.WebhookMe
 
 	if h.option.WebhookURL != "" {
 		return slack.PostWebhookContext(ctx, h.option.WebhookURL, message)
+	}
+
+	options := []slack.MsgOption{
+		slack.MsgOptionText(message.Text, true),
+		slack.MsgOptionAttachments(message.Attachments...),
+		slack.MsgOptionUsername(message.Username),
+		slack.MsgOptionIconURL(message.IconURL),
+		slack.MsgOptionIconEmoji(message.IconEmoji),
+	}
+	if message.ThreadTimestamp != "" {
+		options = append(options, slack.MsgOptionTS(message.ThreadTimestamp))
+	}
+	if message.ReplyBroadcast {
+		options = append(options, slack.MsgOptionBroadcast())
 	}
 
 	_, _, err := slack.
