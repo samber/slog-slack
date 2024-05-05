@@ -92,9 +92,9 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		message.IconURL = h.option.IconURL
 	}
 
-	if ts := ContextThreadTimestamp(ctx); ts != "" {
+	if ts := contextThreadTimestamp(ctx); ts != "" {
 		message.ThreadTimestamp = ts
-		if ContextReplyBroadcast(ctx) {
+		if contextReplyBroadcast(ctx) {
 			message.ReplyBroadcast = true
 		}
 	}
@@ -144,16 +144,6 @@ func (h *SlackHandler) postMessage(ctx context.Context, message *slack.WebhookMe
 		options = append(options, slack.MsgOptionBroadcast())
 	}
 
-	_, _, err := slack.
-		New(h.option.BotToken).
-		PostMessageContext(
-			ctx,
-			message.Channel,
-			slack.MsgOptionText(message.Text, true),
-			slack.MsgOptionAttachments(message.Attachments...),
-			slack.MsgOptionUsername(message.Username),
-			slack.MsgOptionIconURL(message.IconURL),
-			slack.MsgOptionIconEmoji(message.IconEmoji),
-		)
+	_, _, err := slack.New(h.option.BotToken).PostMessageContext(ctx, message.Channel, options...)
 	return err
 }

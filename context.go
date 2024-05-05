@@ -9,7 +9,7 @@ func WithThreadTimestamp(ctx context.Context, ts string) context.Context {
 	return context.WithValue(ctx, threadTimestampCtxKey{}, ts)
 }
 
-func ContextThreadTimestamp(ctx context.Context) string {
+func contextThreadTimestamp(ctx context.Context) string {
 	if v, ok := ctx.Value(threadTimestampCtxKey{}).(string); ok {
 		return v
 	}
@@ -23,7 +23,7 @@ func WithReplyBroadcast(ctx context.Context) context.Context {
 	return context.WithValue(ctx, replyBroadcastCtxKey{}, true)
 }
 
-func ContextReplyBroadcast(ctx context.Context) bool {
+func contextReplyBroadcast(ctx context.Context) bool {
 	_, ok := ctx.Value(replyBroadcastCtxKey{}).(bool)
 	return ok
 }

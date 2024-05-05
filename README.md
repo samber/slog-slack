@@ -87,6 +87,8 @@ type Option struct {
     IconEmoji string
     // bot emoji (default: webhook emoji)
     IconURL string
+    // Not implemented yet, but we would like your feedback here: #7
+    // ThreadTimestamp string
 
 	Timeout time.Duration // default: 10s
 
@@ -148,6 +150,12 @@ func main() {
             ),
         ).
         Info("user registration")
+
+    // push record to a thread
+    logger.ErrorContext(
+        slogslack.WithThreadTimestamp(context.Background(), "1714929099.4238"),
+        "An error",
+    )
 }
 ```
 
