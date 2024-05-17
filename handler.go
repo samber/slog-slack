@@ -75,6 +75,9 @@ func (h *SlackHandler) Enabled(_ context.Context, level slog.Level) bool {
 
 func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 	message := h.option.Converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
+	if message == nil { // Permit the converter to return nil to filter out messages
+		return nil
+	}
 
 	if h.option.Channel != "" {
 		message.Channel = h.option.Channel
