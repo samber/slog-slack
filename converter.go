@@ -38,6 +38,10 @@ func DefaultConverter(addSource bool, replaceAttr func(groups []string, a slog.A
 func attrToSlackMessage(base string, attrs []slog.Attr, message *slack.WebhookMessage) {
 	for i := range attrs {
 		attr := attrs[i]
+		if attr.Equal(slog.Attr{}) {
+			continue
+		}
+
 		k := attr.Key
 		v := attr.Value
 		kind := attr.Value.Kind()
