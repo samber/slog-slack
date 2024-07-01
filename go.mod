@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/samber/lo v1.38.1 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
