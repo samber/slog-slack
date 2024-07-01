@@ -99,6 +99,7 @@ func (h *SlackHandler) Handle(ctx context.Context, record slog.Record) error {
 		}
 	}
 
+	// non-blocking
 	go func() {
 		_ = h.postMessage(ctx, message)
 	}()
