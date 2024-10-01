@@ -27,7 +27,8 @@ type Option struct {
 	// bot emoji (default: webhook emoji)
 	IconURL string
 
-	Timeout time.Duration // default: 10s
+	// API request timeout (default: 10s)
+	Timeout time.Duration
 
 	// optional: customize Slack message builder
 	Converter Converter
