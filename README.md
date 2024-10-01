@@ -106,7 +106,8 @@ type Option struct {
     // Not implemented yet, but we would like your feedback here: #7
     // ThreadTimestamp string
 
-	Timeout time.Duration // default: 10s
+    // API request timeout (default: 10s)
+    Timeout time.Duration
 
     // optional: customize Slack message builder
     Converter Converter
