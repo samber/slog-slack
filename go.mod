@@ -3,7 +3,7 @@ module github.com/samber/slog-slack/v2
 go 1.21
 
 require (
-	github.com/samber/slog-common v0.21.0
+	github.com/samber/slog-common v0.22.0
 	github.com/slack-go/slack v0.16.0
 	go.uber.org/goleak v1.3.0
 )
